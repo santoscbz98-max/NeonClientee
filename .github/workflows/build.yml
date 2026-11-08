@@ -1,3 +1,4 @@
+
 name: Compilar Neon Client
 
 on:
@@ -25,18 +26,27 @@ jobs:
         with:
           gradle-version: '2.14.1'
 
+      - name: Verificar projeto
+        run: |
+          echo "Arquivos do projeto:"
+          ls -la
+          find . -maxdepth 5 -type f
+
       - name: Compilar Neon Client
         run: gradle build --no-daemon --stacktrace
 
-      - name: Verificar JAR
+      - name: Procurar JAR
         if: always()
-        run: find build -type f -name "*.jar" -print || true
+        run: |
+          echo "Arquivos JAR encontrados:"
+          find . -type f -name "*.jar" \
+            -not -path "*/.gradle/*" -print
 
-      - name: Enviar arquivo JAR
+      - name: Enviar JAR
         if: success()
         uses: actions/upload-artifact@v4
         with:
           name: Neon-Client
-          path: build/libs/*.jar
+          path: '**/build/libs/*.jar'
           if-no-files-found: error
           
